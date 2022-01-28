@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>HTML 5 Boilerplate</title>
+    <link href="./main.css" rel="stylesheet" />
+  </head>
+  <body>
+    <script
+      src="https://browser.sentry-cdn.com/6.17.2/bundle.tracing.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      Sentry.init({
+        dsn: "http://88657b1789474377a6d718d92188442e@localhost:8000/1",
+        debug: true,
+        integrations: [new Sentry.Integrations.BrowserTracing()],
+        tracesSampleRate: 1,
+      });
+
+      error = () => {
+        Sentry.captureMessage("Something went wrong2");
+        try {
+          window.nimp2();
+        } catch (err) {
+          console.log(err);
+          Sentry.captureException(err);
+        }
+        undefinedFunction2();
+      };
+      transation = () => {
+        const transaction = Sentry.startTransaction({ name: "mytxn" });
+        Sentry.getCurrentHub().configureScope((scope) =>
+          scope.setSpan(transaction)
+        );
+        const span = transaction.startChild({
+          data: {
+            prop: "data",
+          },
+          op: "task",
+          description: `processing something`,
+        });
+        try {
+          //some op
+          span.setStatus("ok");
+        } catch (err) {
+          span.setStatus("unknown_error");
+          throw err;
+        } finally {
+          span.finish();
+          transaction.finish();
+        }
+      };
+    </script>
+    <button onclick="error()">generate error</button>
+    <button onclick="transation()">generate transation</button>
+  </body>
+</html>
